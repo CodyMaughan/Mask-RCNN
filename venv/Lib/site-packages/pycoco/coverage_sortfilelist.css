@@ -1,0 +1,40 @@
+table.files thead th.filename
+{
+	background-color: #376a94;
+}
+table.files thead th#nroflines
+{
+	background-color: #376a94;
+}
+table.files thead th#coverablelines
+{
+	background-color: #376a94;
+}
+table.files thead th#coveredlines
+{
+	background-color: #376a94;
+}
+table.files thead th#coverage
+{
+	background-color: #376a94;
+}
+table.files tbody td.filename
+{
+	background-color: #fff;
+}
+table.files tbody td.nroflines
+{
+	background-color: #fff;
+}
+table.files tbody td.coverablelines
+{
+	background-color: #fff;
+}
+table.files tbody td.coveredlines
+{
+	background-color: #fff;
+}
+table.files tbody td.coverage
+{
+	background-color: #fff;
+}

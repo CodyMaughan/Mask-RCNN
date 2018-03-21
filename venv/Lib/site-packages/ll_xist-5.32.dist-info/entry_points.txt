@@ -1,0 +1,20 @@
+[console_scripts]
+doc2txt = ll.xist.scripts.doc2txt:main
+dtd2xsc = ll.xist.scripts.dtd2xsc:main
+oracreate = ll.orasql.scripts.oracreate:main [oracle]
+oradelete = ll.orasql.scripts.oradelete:main [oracle]
+oradiff = ll.orasql.scripts.oradiff:main [oracle]
+oradrop = ll.orasql.scripts.oradrop:main [oracle]
+orafind = ll.orasql.scripts.orafind:main [oracle]
+oragrant = ll.orasql.scripts.oragrant:main [oracle]
+oramerge = ll.orasql.scripts.oramerge:main [oracle]
+orareindex = ll.orasql.scripts.orareindex:main [oracle]
+rul4 = ll.scripts.rul4:main
+tld2xsc = ll.xist.scripts.tld2xsc:main
+ucat = ll.scripts.ucat:main
+ucp = ll.scripts.ucp:main
+udiff = ll.scripts.udiff:main
+uhpp = ll.xist.scripts.uhpp:main
+uls = ll.scripts.uls:main
+xml2xsc = ll.xist.scripts.xml2xsc:main
+

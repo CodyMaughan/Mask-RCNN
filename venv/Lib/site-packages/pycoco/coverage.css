@@ -1,0 +1,187 @@
+body
+{
+	color: #000;
+	background-color: #fff;
+	font-family: Verdana, Arial, sans-serif;
+	font-size: 10px;
+	margin: 0px;
+	padding: 0px;
+}
+body.wait
+{
+	cursor: progress;
+}
+body.wait *
+{
+	cursor: progress !important;
+}
+thead span
+{
+	color: #000;
+	cursor: pointer;
+	background-color: #ccc;
+	border-left: 1px solid #fff;
+	border-top: 1px solid #fff;
+	border-right: 1px solid #1c354c;
+	border-bottom: 1px solid #1c354c;
+	padding: 1px 2px;
+	margin-left: 6px;
+	font-weight: normal;
+	font-size: 7px;
+}
+thead span:hover
+{
+	background-color: #aaa;
+}
+th, td, p
+{
+	font-size: 10px;
+}
+a
+{
+	text-decoration: none;
+}
+div.header
+{
+	background-color: #e9e9e9;
+	background-image: url(http://www.python.org/images/header-bg2.png);
+	background-position: bottom;
+	background-repeat: repeat-x;
+	border-bottom: 1px solid #999;
+	height: 86px;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+}
+div.header div.logo
+{
+	margin: 11px 0px 0px 45px;
+	float: left;
+}
+
+div.header div.crumbs
+{
+	font-size: 14px;
+	padding: 64px 6px 6px 0px;
+}
+div.header span.bullet
+{
+	color: #999;
+	padding: 0px 6px 0px 0px;
+	font-size: 12px;
+}
+div.header span.crumb
+{
+	padding-right: 6px;
+}
+div.content
+{
+	margin: 92px 61px 20px 61px;
+}
+
+h1, h2, h3, h4, h5, h6
+{
+    font-family: Georgia, "Bitstream Vera Serif", "New York", Palatino, serif;
+    font-weight: normal;
+}
+
+h1
+{
+    font-size: 24px;
+    color: #234764;
+    margin: 16px 0px 8px 0px;
+}
+
+p.note
+{
+	font-size: 9px;
+	color: #999;
+	margin: -8px 0px 16px 0px;
+}
+
+table.files
+{
+	border-left: 1px solid #ddd;
+}
+table.files th,
+table.files td
+{
+	padding: 3px 6px;
+	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	font-weight: normal;
+}
+table.files thead th
+{
+	text-align: left;
+	color: #fff;
+	background-color: #376a94;
+	font-weight: bold;
+}
+table.files tbody th
+{
+	text-align: left;
+}
+table.files tbody td.nroflines,
+table.files tbody td.coverablelines,
+table.files tbody td.coveredlines,
+table.files tbody td.coverage
+{
+	text-align: right;
+}
+table.files tbody td.disable
+{
+	color: #999;
+}
+
+table.file
+{
+	border-left: 1px solid #ddd;
+}
+table.file th,
+table.file td
+{
+	padding: 2px 4px;
+	border-bottom: 1px solid #ddd;
+	border-right: 1px solid #ddd;
+	font-weight: normal;
+}
+table.file thead th
+{
+	text-align: left;
+	color: #fff;
+	background-color: #376a94;
+	font-weight: bold;
+}
+table.file tbody th
+{
+	text-align: right;
+	font-weight: bold;
+}
+table.file tbody td.count
+{
+	text-align: right;
+}
+table.file tbody td.line
+{
+	white-space: pre;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 11px;
+}
+table.file tbody td.disable
+{
+	color: #999;
+}
+table.file tbody tr.uncoverable th,
+table.file tbody tr.uncoverable td
+{
+	color: #999;
+}
+table.file tbody tr.uncovered th,
+table.file tbody tr.uncovered td
+{
+	background-color: #fdd;
+	border-bottom: 1px solid #ecc;
+	border-right: 1px solid #ecc;
+}
