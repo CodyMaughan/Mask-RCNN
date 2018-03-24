@@ -1,4 +1,10 @@
 import os
+
+# Unfortunately, I don't have enough RAM on my gpu to train the model
+# If you want to use gpu for other process, such as detection, just comment this line out
+# You can also comment this line out if you are using cpu version of tensorflow, or if you have enough gpu memory
+os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+
 import sys
 import random
 import math
@@ -24,6 +30,7 @@ random.seed = seed
 np.random.seed = seed
 
 # Root directory of the project
+print(os.getcwd())
 ROOT_DIR = os.path.dirname(os.getcwd())
 
 # Directory to save logs and trained model
@@ -46,25 +53,25 @@ class MyConfig(Config):
 
     # Train on 1 GPU and 8 images per GPU.
     GPU_COUNT = 1
-    IMAGES_PER_GPU = 2
+    IMAGES_PER_GPU = 4
 
     # Number of classes (including background)
     NUM_CLASSES = 1 + 1  # background + nucleus
 
     # Use small images for faster training. Set the limits of the small side
     # the large side, and that determines the image shape.
-    IMAGE_MIN_DIM = 256
-    IMAGE_MAX_DIM = 1024
+    IMAGE_MIN_DIM = 160
+    IMAGE_MAX_DIM = 832
 
     # Use smaller anchors because our image and objects are small
     RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)  # anchor side in pixels
 
     # Reduce training ROIs per image because the images are small and have
     # few objects. Aim to allow ROI sampling to pick 33% positive ROIs.
-    TRAIN_ROIS_PER_IMAGE = 600
+    TRAIN_ROIS_PER_IMAGE = 400
 
     # Use a small epoch since the data is simple
-    STEPS_PER_EPOCH = 500
+    STEPS_PER_EPOCH = 25
 
     # use small validation steps since the epoch is small
     VALIDATION_STEPS = 5
@@ -148,7 +155,7 @@ model = modellib.MaskRCNN(mode="training", config=config,
                           model_dir=MODEL_DIR)
 
 # Which weights to start with?
-init_with = "coco"  # imagenet, coco, or last
+init_with = "other"  # imagenet, coco, last, or other
 
 if init_with == "imagenet":
     model.load_weights(model.get_imagenet_weights(), by_name=True)
@@ -162,31 +169,34 @@ elif init_with == "coco":
 elif init_with == "last":
     # Load the last model you trained and continue training
     model.load_weights(model.find_last()[1], by_name=True)
+elif init_with == "other":
+    model_path = os.path.join(ROOT_DIR, "mask_rcnn_test1.h5")
+    model.load_weights(model_path, by_name=True)
 
 
 # Train the head branches
 # Passing layers="heads" freezes all layers except the head
 # layers. You can also pass a regular expression to select
 # which layers to train by name pattern.
-# model.train(train_data, val_data,
-#             learning_rate=config.LEARNING_RATE,
-#             epochs=10,
-#             layers='heads')
+model.train(train_data, val_data,
+            learning_rate=config.LEARNING_RATE,
+            epochs=10,
+            layers='heads')
 
 # Fine tune all layers
 # Passing layers="all" trains all layers. You can also
 # pass a regular expression to select which layers to
 # train by name pattern.
-# model.train(train_data, val_data,
-#             learning_rate=config.LEARNING_RATE / 10,
-#             epochs=2,
-#             layers="all")
+model.train(train_data, val_data,
+            learning_rate=config.LEARNING_RATE / 10,
+            epochs=10,
+            layers="all")
 
 # Save weights
 # Typically not needed because callbacks save after every epoch
 # Uncomment to save manually
-# model_path = os.path.join(MODEL_DIR, "mask_rcnn_test1.h5")
-# model.keras_model.save_weights(model_path)
+model_path = os.path.join(MODEL_DIR, "mask_rcnn_v2-0.h5")
+model.keras_model.save_weights(model_path)
 
 def get_ax(rows=1, cols=1, size=8):
     """Return a Matplotlib Axes array to be used in
