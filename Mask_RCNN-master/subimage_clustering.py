@@ -10,7 +10,7 @@ print(os.getcwd())
 
 # Set all of the variable needed
 train_dir = '../input/stage1_train/'
-image_type = '/lab_norm_color/'
+image_type = '/lab_color/'
 n_samples = 50000
 IMG_HEIGHT = 21
 IMG_WIDTH = 21
@@ -20,7 +20,7 @@ output_dir = '../output' + image_type
 output_filenames = ('16_means_clusters.png', '32_means_clusters.png', '64_means_clusters.png', '128_means_clusters.png')
 
 # Set image variables
-title = 'LAB Color Cluster Centers with Normalization'
+title = 'LAB Color Cluster Centers w/o  Normalization'
 subplot_x = (4, 4, 8, 8)
 subplot_y = (4, 8, 8, 16)
 conversion_type = 'lab2rgb'
@@ -67,6 +67,8 @@ def get_rand_image(dir, image_ids, probabilities):
     j = 0
     while r > probabilities[j]:
         j += 1
+        if j >= len(probabilities):
+            break
 
     if j >= len(probabilities):
         return get_rand_image(dir, image_ids, probabilities)
@@ -98,6 +100,8 @@ def get_rand_sub_image(image, sub_height, sub_width):
 
 vectors = []
 for i in range(n_samples):
+    if i % 100 == 0:
+        print(i)
     sub_image = get_rand_sub_image(get_rand_image(train_dir, image_ids, probabilities), IMG_HEIGHT, IMG_WIDTH)
     vectors.append(np.reshape(sub_image, (IMG_HEIGHT * IMG_WIDTH * IMG_CHANNELS)))
 
