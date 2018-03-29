@@ -17,7 +17,7 @@ IMG_WIDTH = 21
 IMG_CHANNELS = 3
 k_vals = (16, 32, 64, 128)
 output_dir = '../output' + image_type
-output_filenames = ('16_means_clusters.png', '32_means_clusters.png', '64_means_clusters.png', '128_means_clusters.png')
+output_filenames = ('16_means_clusters.png', '32_means_clusters.png'    , '64_means_clusters.png', '128_means_clusters.png')
 
 # Set image variables
 title = 'LAB Color Cluster Centers w/o  Normalization'

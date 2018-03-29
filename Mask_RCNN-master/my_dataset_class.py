@@ -3,7 +3,7 @@ import os
 # Unfortunately, I don't have enough RAM on my gpu to train the model
 # If you want to use gpu for other process, such as detection, just comment this line out
 # You can also comment this line out if you are using cpu version of tensorflow, or if you have enough gpu memory
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"
+# os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
 import sys
 import random
@@ -60,8 +60,8 @@ class MyConfig(Config):
 
     # Use small images for faster training. Set the limits of the small side
     # the large side, and that determines the image shape.
-    IMAGE_MIN_DIM = 160
-    IMAGE_MAX_DIM = 832
+    IMAGE_MIN_DIM = 0
+    IMAGE_MAX_DIM = 1024
 
     # Use smaller anchors because our image and objects are small
     RPN_ANCHOR_SCALES = (8, 16, 32, 64, 128)  # anchor side in pixels
@@ -130,7 +130,7 @@ class MyDataset(utils.Dataset):
             else:
                 mask = np.append(mask, mask_, axis=2)
 
-        classes = np.ones([mask.shape[2]], dtype=np.int32)
+        classes = np.ones([mask.shape[2]], dtype=np.bool)
         return mask, classes
 
 
@@ -178,25 +178,28 @@ elif init_with == "other":
 # Passing layers="heads" freezes all layers except the head
 # layers. You can also pass a regular expression to select
 # which layers to train by name pattern.
-model.train(train_data, val_data,
-            learning_rate=config.LEARNING_RATE,
-            epochs=10,
-            layers='heads')
+
+# model.train(train_data, val_data,
+#             learning_rate=config.LEARNING_RATE,
+#             epochs=10,
+#             layers='heads')
 
 # Fine tune all layers
 # Passing layers="all" trains all layers. You can also
 # pass a regular expression to select which layers to
 # train by name pattern.
-model.train(train_data, val_data,
-            learning_rate=config.LEARNING_RATE / 10,
-            epochs=10,
-            layers="all")
+
+# model.train(train_data, val_data,
+#             learning_rate=config.LEARNING_RATE / 10,
+#             epochs=10,
+#             layers="all")
 
 # Save weights
 # Typically not needed because callbacks save after every epoch
 # Uncomment to save manually
-model_path = os.path.join(MODEL_DIR, "mask_rcnn_v2-0.h5")
-model.keras_model.save_weights(model_path)
+
+# model_path = os.path.join(MODEL_DIR, "mask_rcnn_v2-0.h5")
+# model.keras_model.save_weights(model_path)
 
 def get_ax(rows=1, cols=1, size=8):
     """Return a Matplotlib Axes array to be used in
@@ -224,7 +227,7 @@ model = modellib.MaskRCNN(mode="inference",
 
 # Get path to saved weights
 # Either set a specific path or find last trained weights
-model_path = os.path.join(ROOT_DIR, "output/mask_rcnn_test1.h5")
+model_path = os.path.join(ROOT_DIR, "mask_rcnn_2-0-1.h5")
 # model_path = model.find_last()[1]
 
 # Load trained weights (fill in path to trained weights here)
@@ -286,6 +289,7 @@ def rle_encoding(x):
         if (b>prev+1): run_lengths.extend((b + 1, 0))
         run_lengths[-1] += 1
         prev = b
+
     return run_lengths
 
 
@@ -309,18 +313,48 @@ for id in test_data.image_ids:
     scores = r['scores']
     classes = r['class_ids']
 
-    for i in range(len(scores)):
-        m = masks[:, :, i]
+    # Do some sanity checks
+
+    if (image.shape[0] != masks.shape[0]) or (image.shape[1] != masks.shape[1]):
+        print(test_data.image_info[id]['id'])
+        print(image.shape, masks.shape)
+
+    max_mn = image.shape[0] * image.shape[1]
+
+
+    # Sort the masks by the scores in descending order
+    order = list(sorted(zip(scores, range(len(scores))), reverse=True))
+    order = [o[1] for o in order]
+
+    used_pixels = np.zeros((masks.shape[0], masks.shape[1]), dtype=np.bool)
+    for i in order:
+
+        m = masks[:, :, i].astype(np.bool)
         s = scores[i]
         c = classes[i]
+
+        # Here we make sure that pixels are only classified once, ie, only belong to one mask
+        m = np.bitwise_and(m, np.bitwise_xor(m, used_pixels))
+        used_pixels = np.bitwise_or(m, used_pixels)
+
         if c == 1 and s > 0.5:
-            rle_list.append(rle_encoding(m))
-            id_list.append(train_data.image_info[id]['id'])
+            test = rle_encoding(m)
+            if not (test == '' or test == [] or len(test) == 0):
+                rle_list.append(rle_encoding(m))
+                id_list.append(test_data.image_info[id]['id'])
+            else:
+                print('one case of blank line')
         else:
             print('Mask not accepted as score is: ', s)
 
     if len(rle_list) == 0:
-        print('This image id was not included for some reason: ', train_data.image_info[id]['id'])
+        print('This image id was not included for some reason: ', test_data.image_info[id]['id'])
+
+    elif max(max(rle_list)) >= max_mn:
+        print('This image has a mask outside the image bounds: ', test_data.image_info[id]['id'])
+        print(max(rle_list))
+        print(max_mn)
+        print(image.shape)
 
     new_test_ids.extend(id_list)
     rles.extend(rle_list)
@@ -330,4 +364,10 @@ sub = pd.DataFrame()
 sub['ImageId'] = new_test_ids
 sub['EncodedPixels'] = pd.Series(rles).apply(lambda x: ' '.join(str(y) for y in x))
 sub.to_csv('sub-dsbowl2018-2.0.csv', index=False)
+
+test_image_id = test_data.image_info[0]['id']
+test_image = test_data.load_image(0)
+max_n = test_image.shape[0] * test_image.shape[1]
+print(test_image_id)
+print(max_n)
 
