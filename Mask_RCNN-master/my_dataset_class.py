@@ -5,6 +5,10 @@ import os
 # You can also comment this line out if you are using cpu version of tensorflow, or if you have enough gpu memory
 # os.environ["CUDA_VISIBLE_DEVICES"]="-1"
 
+# Which weights to start with?
+init_with = "last"  # imagenet, coco, last, or other
+image_type = "lab_gray" # rgb, lab_gray, lab
+
 import sys
 import random
 import math
@@ -53,7 +57,7 @@ class MyConfig(Config):
 
     # Train on 1 GPU and 8 images per GPU.
     GPU_COUNT = 1
-    IMAGES_PER_GPU = 4
+    IMAGES_PER_GPU = 1
 
     # Number of classes (including background)
     NUM_CLASSES = 1 + 1  # background + nucleus
@@ -75,6 +79,10 @@ class MyConfig(Config):
 
     # use small validation steps since the epoch is small
     VALIDATION_STEPS = 5
+
+    # change mean pixel if not rgb
+    if image_type != 'rgb':
+        MEAN_PIXEL = np.array([127.5, 0, 0])
 
 
 # The subclass of Dataset which loads the data and creates validation and training data split
@@ -153,9 +161,6 @@ val_data.prepare()
 # Create model in training mode
 model = modellib.MaskRCNN(mode="training", config=config,
                           model_dir=MODEL_DIR)
-
-# Which weights to start with?
-init_with = "other"  # imagenet, coco, last, or other
 
 if init_with == "imagenet":
     model.load_weights(model.get_imagenet_weights(), by_name=True)
