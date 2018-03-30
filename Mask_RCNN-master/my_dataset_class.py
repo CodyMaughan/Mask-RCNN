@@ -170,7 +170,7 @@ elif init_with == "last":
     # Load the last model you trained and continue training
     model.load_weights(model.find_last()[1], by_name=True)
 elif init_with == "other":
-    model_path = os.path.join(ROOT_DIR, "mask_rcnn_test1.h5")
+    model_path = os.path.join(ROOT_DIR, "mask_rcnn_2-0-1.h5")
     model.load_weights(model_path, by_name=True)
 
 
@@ -179,27 +179,27 @@ elif init_with == "other":
 # layers. You can also pass a regular expression to select
 # which layers to train by name pattern.
 
-# model.train(train_data, val_data,
-#             learning_rate=config.LEARNING_RATE,
-#             epochs=10,
-#             layers='heads')
+model.train(train_data, val_data,
+            learning_rate=config.LEARNING_RATE,
+            epochs=10,
+            layers='heads')
 
 # Fine tune all layers
 # Passing layers="all" trains all layers. You can also
 # pass a regular expression to select which layers to
 # train by name pattern.
 
-# model.train(train_data, val_data,
-#             learning_rate=config.LEARNING_RATE / 10,
-#             epochs=10,
-#             layers="all")
+model.train(train_data, val_data,
+            learning_rate=config.LEARNING_RATE / 10,
+            epochs=10,
+            layers="all")
 
 # Save weights
 # Typically not needed because callbacks save after every epoch
 # Uncomment to save manually
 
-# model_path = os.path.join(MODEL_DIR, "mask_rcnn_v2-0.h5")
-# model.keras_model.save_weights(model_path)
+model_path = os.path.join(MODEL_DIR, "mask_rcnn_v2-0-2.h5")
+model.keras_model.save_weights(model_path)
 
 def get_ax(rows=1, cols=1, size=8):
     """Return a Matplotlib Axes array to be used in
@@ -227,7 +227,7 @@ model = modellib.MaskRCNN(mode="inference",
 
 # Get path to saved weights
 # Either set a specific path or find last trained weights
-model_path = os.path.join(ROOT_DIR, "mask_rcnn_2-0-1.h5")
+model_path = os.path.join(ROOT_DIR, "mask_rcnn_2-0-2.h5")
 # model_path = model.find_last()[1]
 
 # Load trained weights (fill in path to trained weights here)
@@ -259,24 +259,24 @@ visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'
 
 # Compute VOC-Style mAP @ IoU=0.5
 # Running on 10 images. Increase for better accuracy.
-# image_ids = np.random.choice(val_data.image_ids, 10)
-# APs = []
-# for image_id in image_ids:
-#     # Load image and ground truth data
-#     image, image_meta, gt_class_id, gt_bbox, gt_mask = \
-#         modellib.load_image_gt(val_data, inference_config,
-#                                image_id, use_mini_mask=False)
-#     molded_images = np.expand_dims(modellib.mold_image(image, inference_config), 0)
-#     # Run object detection
-#     results = model.detect([image], verbose=0)
-#     r = results[0]
-#     # Compute AP
-#     AP, precisions, recalls, overlaps = \
-#         utils.compute_ap(gt_bbox, gt_class_id, gt_mask,
-#                          r["rois"], r["class_ids"], r["scores"], r['masks'])
-#     APs.append(AP)
-#
-# print("mAP: ", np.mean(APs))
+image_ids = np.random.choice(val_data.image_ids, 10)
+APs = []
+for image_id in image_ids:
+    # Load image and ground truth data
+    image, image_meta, gt_class_id, gt_bbox, gt_mask = \
+        modellib.load_image_gt(val_data, inference_config,
+                               image_id, use_mini_mask=False)
+    molded_images = np.expand_dims(modellib.mold_image(image, inference_config), 0)
+    # Run object detection
+    results = model.detect([image], verbose=0)
+    r = results[0]
+    # Compute AP
+    AP, precisions, recalls, overlaps = \
+        utils.compute_ap(gt_bbox, gt_class_id, gt_mask,
+                         r["rois"], r["class_ids"], r["scores"], r['masks'])
+    APs.append(AP)
+
+print("mAP: ", np.mean(APs))
 
 
 # Here we are going to try and do the run-length encoding
