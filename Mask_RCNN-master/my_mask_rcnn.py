@@ -17,7 +17,7 @@ use_gpu = True
 init_with = "other"  # imagenet, coco, last, or other
 
 # Set path for model to load for training, only used for other option
-other_model_path = os.path.join(ROOT_DIR, "mask_rcnn_rgb_v2-0-1.h5")
+other_model_path = os.path.join(ROOT_DIR, "mask_rcnn_2-0-1.h5")
 
 # Set directory paths for training and testing datasets
 train_data_dir = '../input/stage1_train/'
