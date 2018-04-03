@@ -104,7 +104,7 @@ class MyConfig(Config):
     STEPS_PER_EPOCH = 1000
 
     # use small validation steps since the epoch is small
-    VALIDATION_STEPS = 10
+    VALIDATION_STEPS = 20
 
     # change mean pixel if not rgb
     if image_type != 'rgb':
@@ -146,7 +146,12 @@ class MyDataset(utils.Dataset):
         image = skimage.io.imread(self.image_info[image_id]['path'])
         # If grayscale. Convert to RGB for consistency.
         if image.ndim != 3:
-            image = skimage.color.gray2rgb(image)
+            if image_type == "rgb":
+                image = skimage.color.gray2rgb(image)
+            else:
+                temp_image = np.zeros((image.shape[0], image.shape[1], 3))
+                temp_image[:, :, 0] = image
+                image = temp_image
         elif image.shape[2] == 4:
             image = image[:,:,:3]
         return image
@@ -208,7 +213,7 @@ if train_model:
 
     model.train(train_data, val_data,
                 learning_rate=config.LEARNING_RATE,
-                epochs=30,
+                epochs=10,
                 layers='heads')
 
     # Fine tune all layers
@@ -218,14 +223,14 @@ if train_model:
 
     model.train(train_data, val_data,
                 learning_rate=config.LEARNING_RATE / 10,
-                epochs=10,
+                epochs=2,
                 layers="all")
 
     # Fine, Fine tune for just a few more epochs
-    model.train(train_data, val_data,
-                learning_rate=config.LEARNING_RATE / 100,
-                epochs=2,
-                layers="all")
+    # model.train(train_data, val_data,
+    #             learning_rate=config.LEARNING_RATE / 100,
+    #             epochs=2,
+    #             layers="all")
 
     # Save weights
     # Typically not needed because callbacks save after every epoch
