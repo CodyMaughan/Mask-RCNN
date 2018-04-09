@@ -161,7 +161,10 @@ for k_try, rows, cols, output_file, output_file2 in zip(k_vals, subplot_x, subpl
         subplots2[i].imshow(center_mask, cmap='gray')
         subplots2[i].axes.xaxis.set_ticklabels([])
         subplots2[i].axes.yaxis.set_ticklabels([])
-        plt.imsave(output_dir + 'Centers/center_' + str(i) + '.png', center_image)
+        if IMG_CHANNELS == 1:
+            plt.imsave(output_dir + 'Centers/center_' + str(i) + '.png', center_image, cmap=plt.get_cmap('gray'))
+        else:
+            plt.imsave(output_dir + 'Centers/center_' + str(i) + '.png', center_image)
         plt.imsave(output_dir + 'Center_masks/mask_' + str(i) + '.png', center_mask, cmap=plt.get_cmap('gray'))
 
     fig.suptitle(title_center + ' k=' + str(k_try))
